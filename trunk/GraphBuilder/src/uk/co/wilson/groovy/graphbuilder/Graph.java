@@ -47,8 +47,8 @@ public class Graph extends GroovyObjectSupport implements Writable {
                                            * @see uk.co.wilson.groovy.graphbuilder.GraphBuilderDelegate#getNodes()
                                            */
                                           @Override
-                                          public Map<String, Node> getNodes() {
-                                            return Graph.this.nodes;
+                                          protected Map<String, Node> getNodes() {
+                                            return Graph.this.getNodes();
                                           }
                                         };
 
@@ -59,6 +59,13 @@ public class Graph extends GroovyObjectSupport implements Writable {
     this.graphName = graphName;
   }
 
+  /**
+   * @return
+   */
+  protected Map<String, Node> getNodes() {
+    return this.nodes;
+  }
+  
   /* (non-JavaDoc)
    * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
    */

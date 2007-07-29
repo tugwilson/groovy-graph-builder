@@ -63,5 +63,5 @@ public abstract class GraphBuilderDelegate extends GroovyObjectSupport implement
   /**
    * @return the nodes
    */
-  public abstract Map<String, Node> getNodes();
+  protected abstract Map<String, Node> getNodes();
 }
