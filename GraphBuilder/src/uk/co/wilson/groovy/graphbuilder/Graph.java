@@ -23,6 +23,7 @@ import java.io.Writer;
 import java.util.Iterator;
 import java.util.Map;
 
+import groovy.lang.Closure;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.Writable;
 
@@ -38,9 +39,15 @@ public class Graph extends GroovyObjectSupport implements Writable {
    * @param graphName
    * @param nodes
    */
-  public Graph(final String graphName, final Map<String, Node> nodes) {
+  public Graph(final String graphName, final Closure closure) {
+  final GraphBuilderDelegate delegate = new GraphBuilderDelegate();
+
+    closure.setDelegate(delegate);
+
+    closure.call();
+    
     this.graphName = graphName;
-    this.nodes = nodes;
+    this.nodes = delegate.getNodes();
   }
 
   /* (non-JavaDoc)
