@@ -21,17 +21,11 @@ package uk.co.wilson.groovy.graphbuilder;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
-  protected final Map<String, Node> nodes ;
-
-  /**
-   * @param nodes
-   */
-  public GraphBuilderDelegate(Map<String, Node> nodes) {
-    this.nodes = nodes;
-  }
+  protected final Map<String, Node> nodes = new HashMap<String, Node>();
 
   /* (non-JavaDoc)
    * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
