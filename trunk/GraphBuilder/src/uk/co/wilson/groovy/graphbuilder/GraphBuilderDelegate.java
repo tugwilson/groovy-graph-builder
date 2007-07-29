@@ -21,12 +21,9 @@ package uk.co.wilson.groovy.graphbuilder;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
 
-import java.util.HashMap;
 import java.util.Map;
 
-public class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
-  protected final Map<String, Node> nodes = new HashMap<String, Node>();
-
+public abstract class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
   /* (non-JavaDoc)
    * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
    */
@@ -38,19 +35,19 @@ public class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyI
                          */
                         @Override
                         public Node[] getFromNodes() {
-                          return findNodes(GraphBuilderDelegate.this.nodes, this.fromNodeNames);
+                          return findNodes(GraphBuilderDelegate.this.getNodes(), this.fromNodeNames);
                         }
-                    
+
                         /* (non-JavaDoc)
                          * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
                          */
                         @Override
                         public Node[] getToNodes() {
-                          return findNodes(GraphBuilderDelegate.this.nodes, this.toNodeNames);
-                        }   
+                          return findNodes(GraphBuilderDelegate.this.getNodes(), this.toNodeNames);
+                        }
                      };
 
-    this.nodes.put(name, node);
+    this.getNodes().put(name, node);
 
     return node;
   }
@@ -74,7 +71,5 @@ public class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyI
   /**
    * @return the nodes
    */
-  public Map<String, Node> getNodes() {
-    return this.nodes;
-  }
+  public abstract Map<String, Node> getNodes();
 }

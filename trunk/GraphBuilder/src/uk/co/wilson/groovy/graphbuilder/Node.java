@@ -42,6 +42,11 @@ public abstract class Node extends GroovyObjectSupport {
 
   private static String[] noNodes = new String[]{};
 
+  protected final String nodeName;
+  protected final Closure action;
+  protected final String[] toNodeNames;
+  protected final String[] fromNodeNames;
+
   protected String[] getNodes(final List<Object> nodeList) {
   final String[] result = new String[nodeList.size()];
   int i = 0;
@@ -71,11 +76,6 @@ public abstract class Node extends GroovyObjectSupport {
     }
     return result;
   }
-
-  protected final String nodeName;
-  protected final Closure action;
-  protected final String[] toNodeNames;
-  protected final String[] fromNodeNames;
 
   /**
    * @param nodeName

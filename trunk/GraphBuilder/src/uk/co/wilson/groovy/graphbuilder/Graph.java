@@ -20,6 +20,7 @@ package uk.co.wilson.groovy.graphbuilder;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -32,29 +33,37 @@ import groovy.lang.Writable;
  *
  */
 public class Graph extends GroovyObjectSupport implements Writable {
-  private final String graphName;
-  private final Map<String, Node> nodes;
+  protected final String graphName;
+  protected final Map<String, Node> nodes = new HashMap<String, Node>();
+
 
   /**
    * @param graphName
    * @param nodes
    */
   public Graph(final String graphName, final Closure closure) {
-  final GraphBuilderDelegate delegate = new GraphBuilderDelegate();
+  final GraphBuilderDelegate delegate = new GraphBuilderDelegate() {
+                                          /* (non-JavaDoc)
+                                           * @see uk.co.wilson.groovy.graphbuilder.GraphBuilderDelegate#getNodes()
+                                           */
+                                          @Override
+                                          public Map<String, Node> getNodes() {
+                                            return Graph.this.nodes;
+                                          }
+                                        };
 
     closure.setDelegate(delegate);
 
     closure.call();
-    
+
     this.graphName = graphName;
-    this.nodes = delegate.getNodes();
   }
 
   /* (non-JavaDoc)
    * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
    */
   @Override
-  public Object getProperty(String property) {
+  public Object getProperty(final String property) {
     return this.nodes.get(property);
   }
 
