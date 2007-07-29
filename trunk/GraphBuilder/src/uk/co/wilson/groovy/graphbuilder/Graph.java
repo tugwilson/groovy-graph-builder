@@ -34,14 +34,21 @@ public class Graph extends GroovyObjectSupport implements Writable {
   private final String graphName;
   private final Map<String, Node> nodes;
 
+  /**
+   * @param graphName
+   * @param nodes
+   */
   public Graph(final String graphName, final Map<String, Node> nodes) {
     this.graphName = graphName;
-
-    for (final Iterator<Node> iterator = nodes.values().iterator(); iterator.hasNext();) {
-      iterator.next().setup(nodes);
-    }
-
     this.nodes = nodes;
+  }
+
+  /* (non-JavaDoc)
+   * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
+   */
+  @Override
+  public Object getProperty(String property) {
+    return this.nodes.get(property);
   }
 
   /* (non-JavaDoc)

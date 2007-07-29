@@ -29,7 +29,7 @@ import java.util.Map;
  * @author John
  *
  */
-public class Node extends GroovyObjectSupport {
+public abstract class Node extends GroovyObjectSupport {
   private static final Closure noAction = new Closure(new Object()) {
     /* (non-JavaDoc)
      * @see groovy.lang.Closure#call(java.lang.Object[])
@@ -76,9 +76,11 @@ public class Node extends GroovyObjectSupport {
   protected final Closure action;
   protected final String[] toNodeNames;
   protected final String[] fromNodeNames;
-  protected Node[] toNodes;
-  protected Node[] fromNodes;
 
+  /**
+   * @param nodeName
+   * @param args
+   */
   public Node(final String nodeName, final Object args) {
   final Object[] argArray = (Object[])args;
 
@@ -167,11 +169,6 @@ public class Node extends GroovyObjectSupport {
     }
   }
 
-  public void setup(final Map<String, Node> nodeMap) {
-    this.fromNodes = findNodes(nodeMap, this.fromNodeNames);
-    this.toNodes = findNodes(nodeMap, this.toNodeNames);
-  }
-
   /**
    * @return the nodeName
    */
@@ -187,30 +184,12 @@ public class Node extends GroovyObjectSupport {
   }
 
   /**
-   * @return the toNodes
+   * @return
    */
-  public Node[] getToNodes() {
-    return this.toNodes;
-  }
+  public abstract Node[] getToNodes();
 
   /**
-   * @param toNodes the toNodes to set
+   * @return
    */
-  public void setToNodes(final Node[] toNodes) {
-    this.toNodes = toNodes;
-  }
-
-  /**
-   * @return the fromNodes
-   */
-  public Node[] getFromNodes() {
-    return this.fromNodes;
-  }
-
-  /**
-   * @param fromNodes the fromNodes to set
-   */
-  public void setFromNodes(final Node[] fromNodes) {
-    this.fromNodes = fromNodes;
-  }
+  public abstract Node[] getFromNodes();
 }

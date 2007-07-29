@@ -18,16 +18,20 @@
  */
 package uk.co.wilson.groovy.graphbuilder;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import groovy.lang.Closure;
 
 public class GraphBuilder {
   public Graph build(final String graphName, final Closure closure) {
-  final GraphBuilderDelegate delegate = new GraphBuilderDelegate();
+  final Map<String, Node> nodes = new HashMap<String, Node>();
+  final GraphBuilderDelegate delegate = new GraphBuilderDelegate(nodes);
 
     closure.setDelegate(delegate);
 
     closure.call();
 
-    return new Graph(graphName, delegate.getNodes());
+    return new Graph(graphName, nodes);
   }
 }
