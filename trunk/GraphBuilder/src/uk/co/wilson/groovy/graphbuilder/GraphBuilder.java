@@ -22,12 +22,7 @@ import groovy.lang.Closure;
 
 public class GraphBuilder {
   public Graph build(final String graphName, final Closure closure) {
-  final GraphBuilderDelegate delegate = new GraphBuilderDelegate();
 
-    closure.setDelegate(delegate);
-
-    closure.call();
-
-    return new Graph(graphName, delegate.getNodes());
+    return new Graph(graphName, closure);
   }
 }
