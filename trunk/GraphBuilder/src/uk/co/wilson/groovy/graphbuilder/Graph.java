@@ -43,12 +43,36 @@ public class Graph extends GroovyObjectSupport implements Writable {
    */
   public Graph(final String graphName, final Closure closure) {
   final GraphBuilderDelegate delegate = new GraphBuilderDelegate() {
-                                          /* (non-JavaDoc)
-                                           * @see uk.co.wilson.groovy.graphbuilder.GraphBuilderDelegate#getNodes()
+                                           /* (non-JavaDoc)
+                                           * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
                                            */
                                           @Override
-                                          protected Map<String, Node> getNodes() {
-                                            return Graph.this.getNodes();
+                                          public Node invokeMethod(final String nodeName, final Object args) {
+                                            return new Node(nodeName, args) {
+                                               /* (non-JavaDoc)
+                                                 * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
+                                                 */
+                                                @Override
+                                                public Node[] getFromNodes() {
+                                                  return findNodes(Graph.this.nodes, this.fromNodeNames);
+                                                }
+
+                                                /* (non-JavaDoc)
+                                                 * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
+                                                 */
+                                                @Override
+                                                public Node[] getToNodes() {
+                                                  return findNodes(Graph.this.nodes, this.toNodeNames);
+                                                }
+                                            };
+                                          }
+                                          
+                                          /* (non-JavaDoc)
+                                           * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
+                                           */
+                                          @Override
+                                          public Object getProperty(final String property) {
+                                            return property;
                                           }
                                         };
 
@@ -59,13 +83,6 @@ public class Graph extends GroovyObjectSupport implements Writable {
     this.graphName = graphName;
   }
 
-  /**
-   * @return
-   */
-  protected Map<String, Node> getNodes() {
-    return this.nodes;
-  }
-  
   /* (non-JavaDoc)
    * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
    */
