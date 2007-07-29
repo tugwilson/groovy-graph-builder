@@ -60,14 +60,6 @@ public abstract class GraphBuilderDelegate extends GroovyObjectSupport implement
     return property;
   }
 
-  /* (non-JavaDoc)
-   * @see groovy.lang.GroovyObjectSupport#setProperty(java.lang.String, java.lang.Object)
-   */
-  @Override
-  public void setProperty(final String property, final Object newValue) {
-    super.setProperty(property, newValue);
-  }
-
   /**
    * @return the nodes
    */
