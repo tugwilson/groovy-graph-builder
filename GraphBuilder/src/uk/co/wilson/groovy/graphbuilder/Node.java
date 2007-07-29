@@ -47,40 +47,11 @@ public abstract class Node extends GroovyObjectSupport {
   protected final String[] toNodeNames;
   protected final String[] fromNodeNames;
 
-  protected String[] getNodes(final List<Object> nodeList) {
-  final String[] result = new String[nodeList.size()];
-  int i = 0;
-
-    for (final Iterator<Object> iterator = nodeList.iterator(); iterator.hasNext();) {
-    final Object name = iterator.next();
-
-      if (name instanceof String) {
-        result[i++] = (String)name;
-      } else {
-        throw new NodeBuilderException("Node '" + this.nodeName + "has a non String element in one of its List parameters");
-      }
-    }
-
-    return result;
-  }
-
-  protected Node[] findNodes(final Map<String, Node> nodeMap, final String[] nodeNames) {
-  final Node[] result = new Node[nodeNames.length];
-
-    for (int i = 0; i != nodeNames.length; i++) {
-      if (nodeMap.containsKey(nodeNames[i])) {
-        result[i] = nodeMap.get(nodeNames[i]);
-      } else {
-        throw new NodeBuilderException("Node '" + this.nodeName + "' refers to the node '" + nodeNames[i] + "' which is undefined");
-      }
-    }
-    return result;
-  }
-
   /**
    * @param nodeName
    * @param args
    */
+  @SuppressWarnings("unchecked")
   public Node(final String nodeName, final Object args) {
   final Object[] argArray = (Object[])args;
 
@@ -167,6 +138,36 @@ public abstract class Node extends GroovyObjectSupport {
       default:
         throw new NodeBuilderException("Node '" + nodeName + "' has " + argArray.length + " parameters. Only 3 parameters are allowed");
     }
+  }
+
+  protected String[] getNodes(final List<Object> nodeList) {
+  final String[] result = new String[nodeList.size()];
+  int i = 0;
+
+    for (final Iterator<Object> iterator = nodeList.iterator(); iterator.hasNext();) {
+    final Object name = iterator.next();
+
+      if (name instanceof String) {
+        result[i++] = (String)name;
+      } else {
+        throw new NodeBuilderException("Node '" + this.nodeName + "has a non String element in one of its List parameters");
+      }
+    }
+
+    return result;
+  }
+
+  protected Node[] findNodes(final Map<String, Node> nodeMap, final String[] nodeNames) {
+  final Node[] result = new Node[nodeNames.length];
+
+    for (int i = 0; i != nodeNames.length; i++) {
+      if (nodeMap.containsKey(nodeNames[i])) {
+        result[i] = nodeMap.get(nodeNames[i]);
+      } else {
+        throw new NodeBuilderException("Node '" + this.nodeName + "' refers to the node '" + nodeNames[i] + "' which is undefined");
+      }
+    }
+    return result;
   }
 
   /**

@@ -21,47 +21,5 @@ package uk.co.wilson.groovy.graphbuilder;
 import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
 
-import java.util.Map;
-
-public abstract class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
-  /* (non-JavaDoc)
-   * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
-   */
-  @Override
-  public Object invokeMethod(final String name, final Object args) {
-  final Node node = new Node(name, args) {
-                        /* (non-JavaDoc)
-                         * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
-                         */
-                        @Override
-                        public Node[] getFromNodes() {
-                          return findNodes(GraphBuilderDelegate.this.getNodes(), this.fromNodeNames);
-                        }
-
-                        /* (non-JavaDoc)
-                         * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
-                         */
-                        @Override
-                        public Node[] getToNodes() {
-                          return findNodes(GraphBuilderDelegate.this.getNodes(), this.toNodeNames);
-                        }
-                     };
-
-    this.getNodes().put(name, node);
-
-    return node;
-  }
-
-  /* (non-JavaDoc)
-   * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
-   */
-  @Override
-  public Object getProperty(final String property) {
-    return property;
-  }
-
-  /**
-   * @return the nodes
-   */
-  protected abstract Map<String, Node> getNodes();
+abstract class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
 }
