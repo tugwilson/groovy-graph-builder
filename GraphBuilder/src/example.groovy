@@ -38,6 +38,11 @@ new GraphBuilder().build("myGraph"){
    * 
    */
   
+  
+  // You can execute arbitrary Groovy code here
+  
+  println "Executing the graph builder now"
+  
 	start(node1){
 	  // you can put any Groovy statements in here
 	  println "starting"
@@ -47,7 +52,9 @@ new GraphBuilder().build("myGraph"){
 	  
 	}
 	
-	node1(start, [node1, node2]){
+	def links = [node1, node2]  // note that you don't have to use literal lists in the node specification
+	             
+	node1(start, links){
 	}
 	
 	node2([node3, start]){
