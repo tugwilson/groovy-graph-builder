@@ -1,0 +1,216 @@
+/*
+ * Created on 29 Jul 2007
+ *
+ * Copyright 2007 John G. Wilson
+ *
+ *   Licensed under the Apache License, Version 2.0 (the "License");
+ *   you may not use this file except in compliance with the License.
+ *   You may obtain a copy of the License at
+ *
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *   Unless required by applicable law or agreed to in writing, software
+ *   distributed under the License is distributed on an "AS IS" BASIS,
+ *   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *   See the License for the specific language governing permissions and
+ *   limitations under the License.
+ *
+ */
+package uk.co.wilson.groovy.graphbuilder;
+
+import groovy.lang.Closure;
+import groovy.lang.GroovyObjectSupport;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * @author John
+ *
+ */
+public class Node extends GroovyObjectSupport {
+  private static final Closure noAction = new Closure(new Object()) {
+    /* (non-JavaDoc)
+     * @see groovy.lang.Closure#call(java.lang.Object[])
+     */
+    @Override
+    public Object call(Object[] args) {
+      return null;
+    }
+  };
+
+  private static String[] noNodes = new String[]{};
+
+  protected String[] getNodes(final List<Object> nodeList) {
+  final String[] result = new String[nodeList.size()];
+  int i = 0;
+
+    for (final Iterator<Object> iterator = nodeList.iterator(); iterator.hasNext();) {
+    final Object name = iterator.next();
+
+      if (name instanceof String) {
+        result[i++] = (String)name;
+      } else {
+        throw new NodeBuilderException("Node '" + this.nodeName + "has a non String element in one of its List parameters");
+      }
+    }
+
+    return result;
+  }
+
+  protected Node[] findNodes(final Map<String, Node> nodeMap, final String[] nodeNames) {
+  final Node[] result = new Node[nodeNames.length];
+
+    for (int i = 0; i != nodeNames.length; i++) {
+      if (nodeMap.containsKey(nodeNames[i])) {
+        result[i] = nodeMap.get(nodeNames[i]);
+      } else {
+        throw new NodeBuilderException("Node '" + this.nodeName + "' refers to the node '" + nodeNames[i] + "' which is undefined");
+      }
+    }
+    return result;
+  }
+
+  protected final String nodeName;
+  protected final Closure action;
+  protected final String[] toNodeNames;
+  protected final String[] fromNodeNames;
+  protected Node[] toNodes;
+  protected Node[] fromNodes;
+
+  public Node(final String nodeName, final Object args) {
+  final Object[] argArray = (Object[])args;
+
+    this.nodeName = nodeName;
+
+    switch(argArray.length) {
+      case 0:
+        this.action = noAction;
+        this.toNodeNames = noNodes;
+        this.fromNodeNames = noNodes;
+        break;
+
+      case 1:
+        if (argArray[0] instanceof List) {
+          this.action = noAction;
+          this.toNodeNames = getNodes((List<Object>)argArray[0]);
+          this.fromNodeNames = noNodes;
+        } else if (argArray[0] instanceof String) {
+          this.action = noAction;
+          this.toNodeNames = new String[]{(String)argArray[0]};
+          this.fromNodeNames = noNodes;
+        } else if (argArray[0] instanceof Closure) {
+          this.action = (Closure)argArray[0];
+          this.toNodeNames = noNodes;
+          this.fromNodeNames = noNodes;
+        } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a parameter of type '" + argArray[0].getClass().getSimpleName()
+                                         + "'. This parameter must be a String, List or Closure");
+        }
+        break;
+
+      case 2:
+        if (argArray[0] instanceof List) {
+          this.toNodeNames = getNodes((List<Object>)argArray[0]);
+        } else if (argArray[0] instanceof String) {
+          this.toNodeNames = new String[]{(String)argArray[0]};
+       } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a first parameter of type '" + argArray[0].getClass().getSimpleName()
+              + "'. The first parameter must be a String or List.");
+        }
+
+        if (argArray[1] instanceof List) {
+          this.action = noAction;
+          this.fromNodeNames = getNodes((List<Object>)argArray[1]);
+        } else if (argArray[1] instanceof String) {
+          this.action = noAction;
+          this.fromNodeNames = new String[]{(String)argArray[1]};
+        } else if (argArray[1] instanceof Closure) {
+          this.action = (Closure)argArray[1];
+          this.fromNodeNames = noNodes;
+        } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a second parameter of type '" + argArray[1].getClass().getSimpleName()
+              + "'. The second parameter must be a String, List or Closure.");
+        }
+        break;
+
+      case 3:
+        if (argArray[0] instanceof List) {
+          this.toNodeNames = getNodes((List<Object>)argArray[0]);
+        } else if (argArray[0] instanceof String) {
+          this.toNodeNames = new String[]{(String)argArray[0]};
+       } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a first parameter of type '" + argArray[0].getClass().getSimpleName()
+              + "'. The first parameter must be a String or List.");
+        }
+
+        if (argArray[1] instanceof List) {
+          this.fromNodeNames = getNodes((List<Object>)argArray[1]);
+        } else if (argArray[1] instanceof String) {
+          this.fromNodeNames = new String[]{(String)argArray[1]};
+       } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a second parameter of type '" + argArray[1].getClass().getSimpleName()
+              + "'. The second parameter must be a String or List.");
+        }
+
+        if (argArray[2] instanceof Closure) {
+          this.action = (Closure)argArray[2];
+        } else {
+          throw new NodeBuilderException("Node '" + nodeName + "' has a third parameter of type '" + argArray[2].getClass().getSimpleName()
+              + "'. The third parameter must be a Closure.");
+        }
+        break;
+
+      default:
+        throw new NodeBuilderException("Node '" + nodeName + "' has " + argArray.length + " parameters. Only 3 parameters are allowed");
+    }
+  }
+
+  public void setup(final Map<String, Node> nodeMap) {
+    this.fromNodes = findNodes(nodeMap, this.fromNodeNames);
+    this.toNodes = findNodes(nodeMap, this.toNodeNames);
+  }
+
+  /**
+   * @return the nodeName
+   */
+  public String getNodeName() {
+    return this.nodeName;
+  }
+
+  /**
+   * @return the action
+   */
+  public Closure getAction() {
+    return this.action;
+  }
+
+  /**
+   * @return the toNodes
+   */
+  public Node[] getToNodes() {
+    return this.toNodes;
+  }
+
+  /**
+   * @param toNodes the toNodes to set
+   */
+  public void setToNodes(final Node[] toNodes) {
+    this.toNodes = toNodes;
+  }
+
+  /**
+   * @return the fromNodes
+   */
+  public Node[] getFromNodes() {
+    return this.fromNodes;
+  }
+
+  /**
+   * @param fromNodes the fromNodes to set
+   */
+  public void setFromNodes(final Node[] fromNodes) {
+    this.fromNodes = fromNodes;
+  }
+}
