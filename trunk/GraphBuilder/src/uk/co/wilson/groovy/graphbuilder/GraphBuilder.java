@@ -22,7 +22,6 @@ import groovy.lang.Closure;
 
 public class GraphBuilder {
   public Graph build(final String graphName, final Closure closure) {
-
     return new Graph(graphName, closure);
   }
 }
