@@ -25,6 +25,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import groovy.lang.Closure;
+import groovy.lang.GroovyInterceptable;
 import groovy.lang.GroovyObjectSupport;
 import groovy.lang.Writable;
 
@@ -36,51 +37,50 @@ public class Graph extends GroovyObjectSupport implements Writable {
   protected final String graphName;
   protected final Map<String, Node> nodes = new HashMap<String, Node>();
 
+  class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
+    /* (non-JavaDoc)
+     * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
+     */
+    @Override
+    public Node invokeMethod(final String nodeName, final Object args) {
+    final Node node = new Node(nodeName, args) {
+                       /* (non-JavaDoc)
+                         * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
+                         */
+                        @Override
+                        public Node[] getFromNodes() {
+                          return findNodes(Graph.this.nodes, this.fromNodeNames);
+                        }
 
+                        /* (non-JavaDoc)
+                         * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
+                         */
+                        @Override
+                        public Node[] getToNodes() {
+                          return findNodes(Graph.this.nodes, this.toNodeNames);
+                        }
+                    };
+                    
+      Graph.this.nodes.put(nodeName, node);
+      
+      return node;
+    }
+    
+    /* (non-JavaDoc)
+     * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
+     */
+    @Override
+    public Object getProperty(final String property) {
+      return property;
+    }
+  }
+  
   /**
    * @param graphName
    * @param nodes
    */
   public Graph(final String graphName, final Closure closure) {
-  final GraphBuilderDelegate delegate = new GraphBuilderDelegate() {
-                                           /* (non-JavaDoc)
-                                           * @see groovy.lang.GroovyObjectSupport#invokeMethod(java.lang.String, java.lang.Object)
-                                           */
-                                          @Override
-                                          public Node invokeMethod(final String nodeName, final Object args) {
-                                          final Node node = new Node(nodeName, args) {
-                                                             /* (non-JavaDoc)
-                                                               * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
-                                                               */
-                                                              @Override
-                                                              public Node[] getFromNodes() {
-                                                                return findNodes(Graph.this.nodes, this.fromNodeNames);
-                                                              }
-              
-                                                              /* (non-JavaDoc)
-                                                               * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
-                                                               */
-                                                              @Override
-                                                              public Node[] getToNodes() {
-                                                                return findNodes(Graph.this.nodes, this.toNodeNames);
-                                                              }
-                                                          };
-                                                          
-                                            Graph.this.nodes.put(nodeName, node);
-                                            
-                                            return node;
-                                          }
-                                          
-                                          /* (non-JavaDoc)
-                                           * @see groovy.lang.GroovyObjectSupport#getProperty(java.lang.String)
-                                           */
-                                          @Override
-                                          public Object getProperty(final String property) {
-                                            return property;
-                                          }
-                                        };
-
-    closure.setDelegate(delegate);
+    closure.setDelegate(new GraphBuilderDelegate());
 
     closure.call();
 
