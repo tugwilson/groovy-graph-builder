@@ -36,6 +36,32 @@ import groovy.lang.Writable;
 public class Graph extends GroovyObjectSupport implements Writable {
   protected final String graphName;
   protected final Map<String, Node> nodes = new HashMap<String, Node>();
+  
+  class NodeImpl extends Node {
+    /**
+     * @param nodeName
+     * @param args
+     */
+    public NodeImpl(final String nodeName, final Object args) {
+      super(nodeName, args);
+    }
+    
+    /* (non-JavaDoc)
+     * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
+     */
+    @Override
+    public Node[] getFromNodes() {
+      return findNodes(Graph.this.nodes, this.fromNodeNames);
+    }
+
+    /* (non-JavaDoc)
+     * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
+     */
+    @Override
+    public Node[] getToNodes() {
+      return findNodes(Graph.this.nodes, this.toNodeNames);
+    }
+  }
 
   class GraphBuilderDelegate extends GroovyObjectSupport implements GroovyInterceptable {
     /* (non-JavaDoc)
@@ -43,23 +69,7 @@ public class Graph extends GroovyObjectSupport implements Writable {
      */
     @Override
     public Node invokeMethod(final String nodeName, final Object args) {
-    final Node node = new Node(nodeName, args) {
-                       /* (non-JavaDoc)
-                         * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
-                         */
-                        @Override
-                        public Node[] getFromNodes() {
-                          return findNodes(Graph.this.nodes, this.fromNodeNames);
-                        }
-
-                        /* (non-JavaDoc)
-                         * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
-                         */
-                        @Override
-                        public Node[] getToNodes() {
-                          return findNodes(Graph.this.nodes, this.toNodeNames);
-                        }
-                    };
+    final Node node = new NodeImpl(nodeName, args);
                     
       Graph.this.nodes.put(nodeName, node);
       
