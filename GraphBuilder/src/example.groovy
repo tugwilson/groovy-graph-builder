@@ -19,7 +19,7 @@
 
 import uk.co.wilson.groovy.graphbuilder.GraphBuilder
 
-new GraphBuilder().build("myGraph"){
+GraphBuilder.build("myGraph"){
   /*
    * A simple Graph builder
    * 

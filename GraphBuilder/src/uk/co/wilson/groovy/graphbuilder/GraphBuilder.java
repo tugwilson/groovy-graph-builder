@@ -21,7 +21,11 @@ package uk.co.wilson.groovy.graphbuilder;
 import groovy.lang.Closure;
 
 public class GraphBuilder {
-  public Graph build(final String graphName, final Closure closure) {
+  private GraphBuilder() {
+    // stop the class being instantiated
+  }
+  
+  public static Graph build(final String graphName, final Closure closure) {
     return new Graph(graphName, closure);
   }
 }
