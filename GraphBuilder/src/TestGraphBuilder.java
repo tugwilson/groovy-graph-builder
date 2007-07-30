@@ -35,6 +35,7 @@ public class TestGraphBuilder {
    * @throws CompilationFailedException
    */
   public static void main(final String[] args) throws CompilationFailedException, IOException {
-    ((Graph)new GroovyShell().evaluate(new File("src\\example.groovy"))).writeTo(new FileWriter("src\\example.dot")).close();
+  final File dir = new File("src");
+    ((Graph)new GroovyShell().evaluate(new File(dir, "example.groovy"))).writeTo(new FileWriter(new File(dir, "example.dot"))).close();
   }
 }
