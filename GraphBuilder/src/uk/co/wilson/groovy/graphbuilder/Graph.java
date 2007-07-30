@@ -48,23 +48,27 @@ public class Graph extends GroovyObjectSupport implements Writable {
                                            */
                                           @Override
                                           public Node invokeMethod(final String nodeName, final Object args) {
-                                            return new Node(nodeName, args) {
-                                               /* (non-JavaDoc)
-                                                 * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
-                                                 */
-                                                @Override
-                                                public Node[] getFromNodes() {
-                                                  return findNodes(Graph.this.nodes, this.fromNodeNames);
-                                                }
-
-                                                /* (non-JavaDoc)
-                                                 * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
-                                                 */
-                                                @Override
-                                                public Node[] getToNodes() {
-                                                  return findNodes(Graph.this.nodes, this.toNodeNames);
-                                                }
-                                            };
+                                          final Node node = new Node(nodeName, args) {
+                                                             /* (non-JavaDoc)
+                                                               * @see uk.co.wilson.groovy.graphbuilder.Node#getFromNodes()
+                                                               */
+                                                              @Override
+                                                              public Node[] getFromNodes() {
+                                                                return findNodes(Graph.this.nodes, this.fromNodeNames);
+                                                              }
+              
+                                                              /* (non-JavaDoc)
+                                                               * @see uk.co.wilson.groovy.graphbuilder.Node#getToNodes()
+                                                               */
+                                                              @Override
+                                                              public Node[] getToNodes() {
+                                                                return findNodes(Graph.this.nodes, this.toNodeNames);
+                                                              }
+                                                          };
+                                                          
+                                            Graph.this.nodes.put(nodeName, node);
+                                            
+                                            return node;
                                           }
                                           
                                           /* (non-JavaDoc)
